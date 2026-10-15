@@ -2,6 +2,9 @@
 
 一个**原生 Android（无 WebView / 无 Chrome 框架）**的 EasyTier 极简客户端。
 
+> **非官方项目。** 这是 EasyTier 的第三方外壳，与官方项目及其作者无关，也不代表官方立场。
+> 需要全量 VPN 接管流量请用官方客户端。EasyTier 本体：<https://github.com/EasyTier/EasyTier>（LGPL-3.0）。
+
 只做四件事：
 
 1. 启动 / 停止 `easytier-core`（以子进程方式运行 TOML 配置文件）
@@ -273,3 +276,23 @@ wsl -d Ubuntu -u root -- bash -lc "tr -d '\r' < /mnt/d/project/easytier-mini/too
 - `color-mix()` / 现代 CSS 与本项目无关（没有 WebView）。
 - 配置里的 `listeners` 必须用 `0.0.0.0`（原因见「RPC 门户为什么绑 0.0.0.0」），写具体网卡 IP 会被 Android 拒绝并导致核心启动失败。
 - 未做：开机自启（`BOOT_COMPLETED`）、多实例、配置可视化编辑。
+
+---
+
+## 致谢与许可
+
+**感谢 [EasyTier](https://github.com/EasyTier/EasyTier) 项目。** 本 App 只是它的一个外壳：网络协议、中继、
+NAT 穿透、RPC 全部来自 EasyTier 本体。本项目 **没有修改它任何一行源码**，只是把
+`easytier-core` 当子进程启动、用 `easytier-cli` 读状态。
+
+| 范围 | 许可 |
+|---|---|
+| 本仓库自身代码 | **MIT**，见 [`LICENSE`](LICENSE) |
+| APK / 发行版中内置的 EasyTier 二进制 | **LGPL-3.0**，全文见 [`LICENSES/LGPL-3.0.txt`](LICENSES/LGPL-3.0.txt) |
+
+- EasyTier 源码：<https://github.com/EasyTier/EasyTier> · 官网文档：<https://easytier.cn>
+- 两者许可不同是**有意的**：本项目以**独立进程**方式调用 EasyTier —— 不链接、不修改、不构成衍生作品；
+  但一旦分发内置了其二进制的 APK，仍须遵守 LGPL-3.0，因此仓库内附许可全文并指明源码出处。
+- 顺带一提：LGPL-3.0 要求使用者**能够替换**其中的库。本项目「二进制在设备上可替换」的设计
+  （见「二进制在设备上可替换」一节）恰好满足了这一点 —— 用户可以直接换掉 `easytier-core`，
+  无需重新编译本 App。
