@@ -1,0 +1,19 @@
+# Shell scripts are consumed inside WSL (`tr -d '\r' < x.sh | bash`, or executed
+# directly). Force LF in the repository so a Windows checkout cannot inject CRLF
+# and break them.
+*.sh   text eol=lf
+
+# Java/XML/Gradle sources: normalise on commit, native line endings on checkout.
+*.java text
+*.xml  text
+*.gradle text
+*.md   text
+*.toml text
+
+# Real binaries -- never diff or re-wrap them.
+*.png  binary
+*.jpg  binary
+*.jar  binary
+*.jks  binary
+*.so   binary
+*.apk  binary

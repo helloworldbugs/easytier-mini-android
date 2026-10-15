@@ -1,0 +1,37 @@
+# ---------------------------------------------------------------- secrets
+# Release signing material. Publishing these would let anyone sign an APK that
+# updates this app on an installed device. Never remove these lines.
+android/keystore/
+android/keystore.properties
+*.jks
+*.keystore
+
+# Absolute local Android SDK path, machine specific.
+android/local.properties
+
+# ------------------------------------------------------- generated / build
+# Gradle
+android/.gradle/
+android/build/
+android/app/build/
+.gradle/
+build/
+
+# Synced from binaries/ by tools/sync-binaries.sh, never edited by hand.
+android/app/src/main/jniLibs/
+
+# The EasyTier binaries are build products of tools/build-rust-bins.sh, not sources:
+# 14 MB of LGPL-3.0 third-party artefacts. Ignored so they cannot be committed by
+# accident -- commit them deliberately (git add -f) only if you accept redistributing
+# them and shipping the required LGPL notice.
+binaries/arm64-v8a/
+
+# Build artefacts (signed APKs).
+dist/
+*.apk
+
+# ------------------------------------------------------------- editor / OS
+.idea/
+*.iml
+.DS_Store
+Thumbs.db

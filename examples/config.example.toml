@@ -1,0 +1,46 @@
+# EasyTier 配置示例（no_tun 模式）
+#
+# 放到车机上这两个目录之一，App 会自动列出：
+#   /sdcard/Android/data/com.kkrainbow.easytier.mini/files/
+#   /sdcard/EasyTier/
+#
+# 注意：App 启动时会写一份运行期副本，并把 [flags] 里的 no_tun 强制改成 true
+#（Android 上 easytier-core 无法自己创建 TUN，只能 no_tun）。你的原文件不会被改动。
+
+instance_name = "car"
+
+# 想要固定 IP 就设 ipv4（no_tun 下不建网卡，但节点身份仍会在网里）
+# ipv4 = "10.126.126.10"
+
+# 监听地址必须写 0.0.0.0：Android 普通应用不允许 SO_BINDTODEVICE，
+# 写具体网卡 IP（如 192.168.x.x）会让核心 failed to listen 直接退出。
+listeners = [
+    "tcp://0.0.0.0:11010",
+    "udp://0.0.0.0:11010",
+]
+
+# 连到公共节点（按需替换）
+[[peer]]
+uri = "tcp://public.easytier.cn:11010"
+
+[network_identity]
+network_name = "my-mesh"
+network_secret = "换成你自己的密钥"
+
+[flags]
+default_protocol = "tcp"
+dev_name = ""
+enable_encryption = true
+enable_ipv6 = true
+mtu = 1380
+latency_first = false
+enable_exit_node = false
+# ↓ 这一行是必须的；App 也会强制写成 true
+no_tun = true
+use_smoltcp = false
+relay_network_whitelist = "*"
+disable_p2p = false
+
+# no_tun 模式下想访问对端所在子网，用下面这种（按需）
+# [[proxy_network]]
+# cidr = "192.168.1.0/24"

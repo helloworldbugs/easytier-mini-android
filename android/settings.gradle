@@ -1,0 +1,2 @@
+rootProject.name = 'easytier-mini'
+include ':app'

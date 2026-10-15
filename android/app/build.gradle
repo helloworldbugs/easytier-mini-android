@@ -1,0 +1,88 @@
+apply plugin: 'com.android.application'
+
+// Signing material lives outside the repo tree in keystore.properties.
+def keystorePropsFile = rootProject.file('keystore.properties')
+def keystoreProps = new Properties()
+if (keystorePropsFile.exists()) {
+    keystorePropsFile.withInputStream { keystoreProps.load(it) }
+}
+def hasKeystore = keystoreProps.getProperty('storeFile') != null
+
+android {
+    namespace 'com.kkrainbow.easytier.mini'
+    compileSdk 34
+
+    defaultConfig {
+        // Distinct from the official app and from the WebView-based fork, so all
+        // three can be installed side by side.
+        applicationId 'com.kkrainbow.easytier.mini'
+        minSdk 24
+        // targetSdk 28 is deliberate: it keeps the app clear of the Android 10+
+        // W^X exec restriction, mandatory foreground-service types, the
+        // POST_NOTIFICATIONS runtime permission and scoped storage. This is a
+        // sideloaded car-head-unit utility, never a Play Store app.
+        targetSdk 28
+        versionCode 1
+        versionName '1.0.0'
+    }
+
+    signingConfigs {
+        release {
+            if (hasKeystore) {
+                storeFile rootProject.file(keystoreProps.getProperty('storeFile'))
+                storePassword keystoreProps.getProperty('storePassword')
+                keyAlias keystoreProps.getProperty('keyAlias')
+                keyPassword keystoreProps.getProperty('keyPassword')
+                // AGP turns v1 off at minSdk >= 24, but v2 alone is not enough for
+                // every reader: third-party "APK installer" apps and cheap head-unit
+                // ROMs still inspect the JAR signature (META-INF) and bail out when
+                // it is missing. v3 costs nothing and Android 9+ prefers it.
+                enableV1Signing true
+                enableV2Signing true
+                enableV3Signing true
+            }
+        }
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled true
+            shrinkResources true
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            if (hasKeystore) {
+                signingConfig signingConfigs.release
+            }
+        }
+        debug {
+            minifyEnabled false
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_11
+        targetCompatibility JavaVersion.VERSION_11
+    }
+
+    packaging {
+        jniLibs {
+            // == android:extractNativeLibs="true": the binaries must be extracted
+            // to nativeLibraryDir, which is the only place a modern Android app is
+            // allowed to execve() from. Verified after the build with aapt2.
+            useLegacyPackaging = true
+        }
+        resources {
+            excludes += ['META-INF/**', '**/*.kotlin_metadata', 'DebugProbesKt.bin', '*.version']
+        }
+    }
+
+    lint {
+        abortOnError false
+        checkReleaseBuilds false
+        // targetSdk 28 intentionally trips "expiring target sdk" style checks.
+        disable 'ExpiredTargetSdkVersion', 'OldTargetApi'
+    }
+}
+
+// No dependencies at all on purpose: the whole UI is framework-only, so the APK
+// stays in the tens of KB and the bundle size is dominated by the two binaries.
+dependencies { }
