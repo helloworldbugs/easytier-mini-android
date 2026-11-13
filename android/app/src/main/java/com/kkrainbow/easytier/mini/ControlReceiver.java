@@ -19,6 +19,8 @@ public class ControlReceiver extends BroadcastReceiver {
     public static final String ACTION_STATUS = "com.kkrainbow.easytier.mini.action.STATUS";
     public static final String ACTION_LIST = "com.kkrainbow.easytier.mini.action.LIST";
     public static final String ACTION_SHUTDOWN = "com.kkrainbow.easytier.mini.action.SHUTDOWN";
+    public static final String ACTION_SHOW_ICON = "com.kkrainbow.easytier.mini.action.SHOW_ICON";
+    public static final String ACTION_HIDE_ICON = "com.kkrainbow.easytier.mini.action.HIDE_ICON";
 
     @Override
     public void onReceive(Context ctx, Intent in) {
@@ -58,7 +60,8 @@ public class ControlReceiver extends BroadcastReceiver {
                 String error = Core.get().lastError();
                 reply("running=" + Core.get().isRunning()
                         + " config=" + (cfg != null ? cfg : "-")
-                        + " error=" + (error != null ? error : "-"));
+                        + " error=" + (error != null ? error : "-")
+                        + " icon=" + (Launcher.isHidden(ctx) ? "hidden" : "visible"));
                 return;
             }
             case ACTION_LIST: {
@@ -77,6 +80,14 @@ public class ControlReceiver extends BroadcastReceiver {
                 // mid-teardown.
                 reply(forward(ctx, CoreService.ACTION_SHUTDOWN, null)
                         ? "SHUTDOWN 已转发" : "SHUTDOWN 转发失败");
+                return;
+            case ACTION_SHOW_ICON:
+                Launcher.setHidden(ctx, false);
+                reply("图标已恢复");
+                return;
+            case ACTION_HIDE_ICON:
+                Launcher.setHidden(ctx, true);
+                reply("图标已隐藏");
                 return;
             default:
                 Core.get().logs().add("!! [ctl] 未知动作: " + action);

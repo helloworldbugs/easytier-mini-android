@@ -196,7 +196,9 @@ public class CoreService extends Service {
 
         PendingIntent stopPi = PendingIntent.getService(this, 1,
                 new Intent(this, CoreService.class).setAction(ACTION_STOP), piFlags);
-        PendingIntent openPi = PendingIntent.getActivity(this, 2,
+        // A disabled activity cannot be started by anyone, so omit the tap target instead
+        // of leaving the user with a notification that silently does nothing.
+        PendingIntent openPi = Launcher.isHidden(this) ? null : PendingIntent.getActivity(this, 2,
                 new Intent(this, MainActivity.class), piFlags);
 
         Notification.Builder b = Build.VERSION.SDK_INT >= Build.VERSION_CODES.O

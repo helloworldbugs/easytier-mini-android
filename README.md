@@ -268,6 +268,29 @@ wsl -d Ubuntu -u root -- bash -lc "tr -d '\r' < /mnt/d/project/easytier-mini/too
 
 ---
 
+## 隐藏桌面图标
+
+工具栏下方有「隐藏桌面图标」勾选框 +「应用」按钮：勾上并点「应用」，App 的桌面图标消失，
+但**已经在跑的进程/服务不受影响**（用的是 `DONT_KILL_APP`，核心不会被杀）。
+
+**这不是单向操作，恢复靠广播**（图标没了之后，没有任何入口能点开界面）：
+
+```bash
+adb shell am broadcast -n com.kkrainbow.easytier.mini/.ControlReceiver -a com.kkrainbow.easytier.mini.action.SHOW_ICON
+```
+
+所以界面上勾选后会直接把这条命令弹在 Toast 里，README 也留一份 —— 别在没读过这条的情况下隐藏。
+
+同样的能力也可以反向用（不开界面就把图标藏起来）：
+
+```bash
+adb shell am broadcast -n com.kkrainbow.easytier.mini/.ControlReceiver -a com.kkrainbow.easytier.mini.action.HIDE_ICON
+```
+
+`STATUS` 的返回值末尾多了一个 `icon=hidden|visible`，可以先查状态再决定要不要恢复。
+
+---
+
 ## 已知限制
 
 - **仅 arm64-v8a**。

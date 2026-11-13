@@ -65,6 +65,7 @@ public class MainActivity extends Activity {
     private TextView logView;
     private CheckBox autoRunBox;
     private Button runBtn;
+    private CheckBox hideBox;
 
     private final List<File> configs = new ArrayList<>();
     private boolean polling;
@@ -183,6 +184,20 @@ public class MainActivity extends Activity {
         autoRunBox.setChecked(prefs.autoRun());
         autoRunBox.setOnCheckedChangeListener((v, checked) -> prefs.setAutoRun(checked));
         root.addView(autoRunBox, matchWrap());
+
+        // Hiding the icon is deliberately a two-step action (tick, then apply): the moment
+        // it is applied the app becomes unreachable from the launcher.
+        hideBox = new CheckBox(this);
+        hideBox.setText("隐藏桌面图标");
+        hideBox.setChecked(Launcher.isHidden(this));
+        LinearLayout iconRow = new LinearLayout(this);
+        iconRow.setOrientation(LinearLayout.HORIZONTAL);
+        iconRow.addView(hideBox, weight1());
+        Button applyIconBtn = new Button(this);
+        applyIconBtn.setText("应用");
+        applyIconBtn.setOnClickListener(v -> applyIconVisibility());
+        iconRow.addView(applyIconBtn, wrapWrap());
+        root.addView(iconRow, matchWrap());
 
         root.addView(label("连接设备（peer）"), matchWrap());
         ListView peerList = new ListView(this);
@@ -471,6 +486,21 @@ public class MainActivity extends Activity {
         if (requestCode == REQ_PICK_CONFIG && resultCode == RESULT_OK
                 && data != null && data.getData() != null) {
             importConfigFrom(data.getData());
+        }
+    }
+
+    /**
+     * Applies the icon visibility choice. Hiding is reversible only through the exported
+     * control receiver, so the toast spells the recovery command out rather than leaving
+     * the user with an app that appears to have vanished.
+     */
+    private void applyIconVisibility() {
+        boolean hide = hideBox.isChecked();
+        Launcher.setHidden(this, hide);
+        if (hide) {
+            toast("已隐藏桌面图标\n恢复方式：\n" + Launcher.restoreCommand(this));
+        } else {
+            toast("已恢复桌面图标");
         }
     }
 

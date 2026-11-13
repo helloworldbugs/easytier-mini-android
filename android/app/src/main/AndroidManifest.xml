@@ -45,6 +45,8 @@
                 <action android:name="com.kkrainbow.easytier.mini.action.STATUS" />
                 <action android:name="com.kkrainbow.easytier.mini.action.LIST" />
                 <action android:name="com.kkrainbow.easytier.mini.action.SHUTDOWN" />
+                <action android:name="com.kkrainbow.easytier.mini.action.SHOW_ICON" />
+                <action android:name="com.kkrainbow.easytier.mini.action.HIDE_ICON" />
             </intent-filter>
         </receiver>
 
